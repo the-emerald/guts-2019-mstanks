@@ -7,6 +7,10 @@ class BotInterface:
         self.game_server = game_server
         self.game_server.sendMessage(ServerMessageTypes.CREATETANK, {'Name': name})
 
+    # TODO: Method that returns a tuple of angle and distance to an object
+    def distance_angle_object(self, coordinate: tuple, heading: int):
+        pass
+
     def rx(self):
         raise NotImplementedError
 
