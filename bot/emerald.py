@@ -13,5 +13,5 @@ class EmeraldBot(InterfaceBot):
     def rx(self):
         self.messages.append(self.game_server.readMessage())
 
-    def forward_thing(self): # Placeholder
+    def move(self): # Placeholder
         self.game_server.sendMessage(ServerMessageTypes.MOVEFORWARDDISTANCE, {'Amount': random.randint(0, 10)})

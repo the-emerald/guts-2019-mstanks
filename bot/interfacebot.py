@@ -10,3 +10,6 @@ class InterfaceBot:
     def rx(self):
         raise NotImplementedError
 
+    def move(self):
+        raise NotImplementedError
+
