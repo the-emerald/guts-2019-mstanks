@@ -1,12 +1,17 @@
 import random
+
+from bot.interfacebot import InterfaceBot
 from bot.servercomms import *
-from bot.servermessagetypes import ServerMessageTypes
+from bot.servermessagetypes import *
 
 
-class EmeraldBot:
+class EmeraldBot(InterfaceBot):
     def __init__(self, game_server: ServerComms, name: int):
-        self.game_server = game_server
-        self.game_server.sendMessage(ServerMessageTypes.CREATETANK, {'Name': name})
+        super().__init__(game_server, name)
+        self.messages = []
+
+    def rx(self):
+        self.messages.append(self.game_server.readMessage())
 
     def forward_thing(self): # Placeholder
         self.game_server.sendMessage(ServerMessageTypes.MOVEFORWARDDISTANCE, {'Amount': random.randint(0, 10)})
