@@ -1,5 +1,5 @@
-from bot.servercomms import ServerComms
-from bot.servermessagetypes import ServerMessageTypes
+from bot.common.servercomms import ServerComms
+from bot.common.servermessagetypes import ServerMessageTypes
 
 
 class InterfaceBot:

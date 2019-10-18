@@ -1,8 +1,8 @@
 import random
 
-from bot.interfacebot import InterfaceBot
-from bot.servercomms import *
-from bot.servermessagetypes import *
+from bot.common.botinterface import InterfaceBot
+from bot.common.servercomms import *
+from bot.common.servermessagetypes import *
 
 
 class ForwardsBot(InterfaceBot):
