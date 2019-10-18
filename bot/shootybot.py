@@ -20,7 +20,7 @@ class ShootyBot(BotInterface):
     def action(self):
         if not self.last_message["messageType"] == 18:
             return
-        distance, angle = self.distance_angle_object(self.get_coords(self.last_message), self.last_message["Heading"])
-
+        target_coordinates = self.get_coords(self.last_message)
+        self.game_server.sendMessage(self.determine_turret_turn_angle(target_coordinates))
         self.game_server.sendMessage(ServerMessageTypes.FIRE)
 
