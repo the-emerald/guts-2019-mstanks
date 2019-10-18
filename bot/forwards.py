@@ -13,5 +13,5 @@ class ForwardsBot(InterfaceBot):
     def rx(self):
         self.messages.append(self.game_server.readMessage())
 
-    def move(self): # Placeholder
+    def action(self): # Placeholder
         self.game_server.sendMessage(ServerMessageTypes.MOVEFORWARDDISTANCE, {'Amount': random.randint(0, 10)})

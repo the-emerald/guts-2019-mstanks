@@ -6,6 +6,8 @@ import logging
 import binascii
 import struct
 
+from bot.common.servermessagetypes import ServerMessageTypes
+
 
 class ServerComms(object):
     """
