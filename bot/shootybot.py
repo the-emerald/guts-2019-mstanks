@@ -8,9 +8,9 @@ class ShootyBot(BotInterface):
         super().__init__(game_server, name)
         self.last_message = None
 
-    # TODO: Method that determines whether the tank should turn left or right on a target. Should return either
+    # TODO: Method that determines whether the turret should turn left or right on a target. Should return either
     #   ServerMessageTypes left or right
-    def determine_turn_angle(self, angle: int):
+    def determine_turret_turn_angle(self, coordinate: tuple):
         pass
 
     def rx(self):
