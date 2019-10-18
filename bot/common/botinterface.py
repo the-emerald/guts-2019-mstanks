@@ -2,7 +2,7 @@ from bot.common.servercomms import ServerComms
 from bot.common.servermessagetypes import ServerMessageTypes
 
 
-class InterfaceBot:
+class BotInterface:
     def __init__(self, game_server: ServerComms, name: str):
         self.game_server = game_server
         self.game_server.sendMessage(ServerMessageTypes.CREATETANK, {'Name': name})

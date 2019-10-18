@@ -1,11 +1,11 @@
 import random
 
-from bot.common.botinterface import InterfaceBot
+from bot.common.botinterface import BotInterface
 from bot.common.servercomms import *
 from bot.common.servermessagetypes import *
 
 
-class ForwardsBot(InterfaceBot):
+class ForwardsBot(BotInterface):
     def __init__(self, game_server: ServerComms, name: str):
         super().__init__(game_server, name)
         self.messages = []
