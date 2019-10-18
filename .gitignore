@@ -1,0 +1,12 @@
+.idea/
+target/
+tmp/
+temp/
+__pycache__/
+dist/
+.venv
+.ipynb_checkpoints
+.fuse_hidden*
+*.pyc
+*.orig
+*.bak
