@@ -5,7 +5,7 @@ from bot.servercomms import *
 from bot.servermessagetypes import *
 
 
-class EmeraldBot(InterfaceBot):
+class ForwardsBot(InterfaceBot):
     def __init__(self, game_server: ServerComms, name: int):
         super().__init__(game_server, name)
         self.messages = []
