@@ -5,7 +5,7 @@ from bot.common.servermessagetypes import ServerMessageTypes
 
 class ShootyBot(InterfaceBot):
 
-    def __init__(self, game_server: ServerComms, name: int):
+    def __init__(self, game_server: ServerComms, name: str):
         super().__init__(game_server, name)
         self.last_message = None
 
