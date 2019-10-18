@@ -1,5 +1,5 @@
 from bot.emerald import EmeraldBot
-from bot.comms import ServerComms
+from bot.servercomms import ServerComms
 
 gs = ServerComms('127.0.0.1', 8052)
 

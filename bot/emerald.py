@@ -1,5 +1,6 @@
 import random
-from bot.comms import *
+from bot.servercomms import *
+from bot.servermessagetypes import ServerMessageTypes
 
 
 class EmeraldBot:
