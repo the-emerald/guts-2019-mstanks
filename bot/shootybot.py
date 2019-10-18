@@ -14,8 +14,8 @@ class ShootyBot(InterfaceBot):
         # self.messages.append(self.game_server.readMessage())
 
     def action(self):
+        self.game_server.sendMessage(ServerMessageTypes.TOGGLELEFT)
         if not self.last_message["messageType"] == 18:
             return
         self.game_server.sendMessage(ServerMessageTypes.FIRE)
-
 
