@@ -3,7 +3,7 @@ from typing import Dict
 
 from bot.common.servercomms import ServerComms
 from bot.common.servermessagetypes import ServerMessageTypes
-from bot.tracker import Tracker
+from bot.controller.tracker import Tracker
 
 
 class BotInterface:
