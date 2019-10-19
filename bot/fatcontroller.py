@@ -40,6 +40,7 @@ class Controller:
         while not self.halt:
             bot.rx()
             bot.action()
+            time.sleep(1/16)
 
 
 if __name__ == '__main__':
