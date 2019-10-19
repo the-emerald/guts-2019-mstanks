@@ -49,7 +49,7 @@ class BotInterface:
         at_goal = 0
         if y >= 0:
             goal = 0, 101
-            while at_goal == 0:
+            while not at_goal:
                 x, y = self.pos
                 if y >= 90:
                     while abs(x) >= 15:
