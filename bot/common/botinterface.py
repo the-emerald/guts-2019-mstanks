@@ -16,6 +16,8 @@ class BotInterface:
         self.turret_heading = 0
         self.target = None
         self.tracker = tracker
+        self.health = None
+        self.ammo = None
 
     def distance_to_object(self, coordinate: tuple):
         ox, oy = self.pos
@@ -36,6 +38,8 @@ class BotInterface:
             self.pos = self.get_coords(message)
             self.heading = message['Heading']
             self.turret_heading = message['TurretHeading']
+            self.health = message['Health']
+            self.ammo = message['Ammo']
 
     def dodge(self, selfpos, selfheading: int, firepos, fireheading: int):
         a = self.angle_to_object(firepos)

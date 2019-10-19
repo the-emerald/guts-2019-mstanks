@@ -18,7 +18,19 @@ class CirclingBot(BotInterface):
         self.handle_message(self.last_message)  # Does the updating
         return self.last_message
 
+
+
     def action(self):
+        dict {'Has points': '',
+              'Aggression Level': 'High',
+              'Health': self.health,
+              'Ammo':self.ammo,
+              'EnemyDistance':  Distance to enemies
+                  Distance to health
+              Distance to ammo
+                  Distance to teammate
+              }
+
         # Assuming the controller updates the target...
         target = self.target  # get coordinates from target
         if not target:
@@ -28,3 +40,6 @@ class CirclingBot(BotInterface):
         self.game_server.sendMessage(ServerMessageTypes.TURNTOHEADING, {"Amount": target_angle})
         self.game_server.sendMessage(ServerMessageTypes.MOVEFORWARDDISTANCE, {"Amount": 10})
         pass
+
+
+

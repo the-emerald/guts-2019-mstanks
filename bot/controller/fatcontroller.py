@@ -53,6 +53,7 @@ class Controller:
                         if state.type == 'Tank' and not state.name.startswith(self.team + ':'):
                             targ = entity_id
 
+
                     for bot in self.bots:
                         bot.target = targ
                     logging.debug("Target: %s", targ)
