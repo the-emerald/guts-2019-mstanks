@@ -37,6 +37,22 @@ class BotInterface:
             self.heading = message['Heading']
             self.turret_heading = message['TurretHeading']
 
+    def dodge(self, selfpos, selfheading: int, firepos, fireheading: int):
+        a = self.angle_to_object(firepos)
+        b = (a + 180) % 360
+        if b == fireheading:
+            heading = None
+            if a - 10 <= selfheading <= a + 10:
+                heading = (firepos + 90) % 360
+            elif b - 10 <= selfheading <= b + 10:
+                heading = (firepos - 90) % 360
+
+            if heading:
+                self.game_server.sendMessage(ServerMessageTypes.TURNTOHEADING, {"Amount": heading})
+                self.game_server.sendMessage(ServerMessageTypes.MOVEFORWARDDISTANCE, {"Amount": 15})
+
+        return
+
     def rx(self):
         raise NotImplementedError
 
