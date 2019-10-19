@@ -1,4 +1,5 @@
 import math
+import time
 from typing import Dict
 
 from common.servercomms import ServerComms
@@ -36,6 +37,29 @@ class BotInterface:
             self.pos = self.get_coords(message)
             self.heading = message['Heading']
             self.turret_heading = message['TurretHeading']
+        return
+
+    def return_to_goal(self):
+        def get_close():
+            self.game_server.sendMessage(ServerMessageTypes.TURNTOHEADING, {"Amount": self.angle_to_object(goal)})
+            self.game_server.sendMessage(ServerMessageTypes.MOVEFORWARDDISTANCE, {"Amount": 10})
+            time.sleep(1)
+
+        x, y = self.pos
+        at_goal = 0
+        if y >= 0:
+            goal = 0, 101
+            while at_goal == 0:
+                x, y = self.pos
+                if y >= 90:
+                    while abs(x) >= 15:
+                        goal = 0, 89
+                        get_close()
+                        goal = 0, 101
+                    get_close()
+                get_close()
+                if self.pos == goal:
+                    at_goal = 1
 
     def rx(self):
         raise NotImplementedError
