@@ -14,7 +14,6 @@ class ShootyBot(BotInterface):
         # self.messages.append(self.game_server.readMessage())
 
     def action(self):
-        self.game_server.sendMessage(ServerMessageTypes.TOGGLELEFT)
         if self.last_message["messageType"] != ServerMessageTypes.OBJECTUPDATE or \
            self.last_message["Name"] == self.name:
             return
