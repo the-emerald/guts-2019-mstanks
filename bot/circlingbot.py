@@ -1,3 +1,4 @@
+import logging
 from enum import Enum
 
 from bot.common.botinterface import BotInterface
@@ -21,6 +22,7 @@ class CirclingBot(BotInterface):
     def rx(self):
         self.last_message = self.game_server.readMessage()
         self.handle_message(self.last_message) # Does the updating
+        return self.last_message
 
     def next_movement_vector(self):
         # Determine where target is
@@ -29,7 +31,11 @@ class CirclingBot(BotInterface):
 
     def action(self):
         # Assuming the controller updates the target...
-        target_coords = self.target  # get coordinates from target
+        target = self.target  # get coordinates from target
+        if not target:
+            return
+        logging.debug("target %s", self.target)
+        target_coords = self.tracker.positions[target].pos
         target_angle = self.angle_to_object(target_coords)
         self.game_server.sendMessage(ServerMessageTypes.TURNTOHEADING, {"Amount": target_angle})
         if self.current_status == CirclingBotStatuses.ACQUIRING and self.heading == target_angle:
