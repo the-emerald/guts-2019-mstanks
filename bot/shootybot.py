@@ -16,5 +16,8 @@ class ShootyBot(BotInterface):
         self.game_server.sendMessage(ServerMessageTypes.TOGGLELEFT)
         if not self.last_message["messageType"] == 18:
             return
+        target_coordinates = self.get_coords(self.last_message)
+        self.game_server.sendMessage(ServerMessageTypes.TURNTURRETTOHEADING, {"Amount": self.distance_angle_object(
+            target_coordinates, self.last_message["Heading"])[0]})
         self.game_server.sendMessage(ServerMessageTypes.FIRE)
 
