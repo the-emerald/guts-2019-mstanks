@@ -4,11 +4,10 @@ import time
 from queue import Queue, Empty
 from typing import List
 
-from bot.common.botinterface import BotInterface
-from bot.common.servercomms import ServerComms
-from bot.shootybot import ShootyBot
-from bot.circlingbot import CirclingBot
-from bot.controller.tracker import Tracker
+from common.botinterface import BotInterface
+from common.servercomms import ServerComms
+from bots.circlingbot import CirclingBot
+from controller.tracker import Tracker
 
 
 class Controller:

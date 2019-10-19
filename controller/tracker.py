@@ -1,6 +1,6 @@
-from typing import Dict, Any
+from typing import Dict
 
-from bot.common.servermessagetypes import ServerMessageTypes
+from common.servermessagetypes import ServerMessageTypes
 import logging
 
 

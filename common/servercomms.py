@@ -3,11 +3,10 @@
 import json
 import socket
 import logging
-import binascii
 import struct
 import time
 
-from bot.common.servermessagetypes import ServerMessageTypes
+from common.servermessagetypes import ServerMessageTypes
 
 
 class ServerComms(object):

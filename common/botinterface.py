@@ -1,9 +1,9 @@
 import math
 from typing import Dict
 
-from bot.common.servercomms import ServerComms
-from bot.common.servermessagetypes import ServerMessageTypes
-from bot.controller.tracker import Tracker
+from common.servercomms import ServerComms
+from common.servermessagetypes import ServerMessageTypes
+from controller.tracker import Tracker
 
 
 class BotInterface:

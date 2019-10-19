@@ -1,9 +1,7 @@
-import logging
-
-from bot.common.botinterface import BotInterface
-from bot.common.servercomms import ServerComms
-from bot.common.servermessagetypes import ServerMessageTypes
-from bot.controller.tracker import Tracker
+from common.botinterface import BotInterface
+from common.servercomms import ServerComms
+from common.servermessagetypes import ServerMessageTypes
+from controller.tracker import Tracker
 
 
 class CirclingBot(BotInterface):
