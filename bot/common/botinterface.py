@@ -3,10 +3,11 @@ from typing import Dict
 
 from bot.common.servercomms import ServerComms
 from bot.common.servermessagetypes import ServerMessageTypes
+from bot.tracker import Tracker
 
 
 class BotInterface:
-    def __init__(self, game_server: ServerComms, name: str):
+    def __init__(self, game_server: ServerComms, name: str, tracker: Tracker):
         self.game_server = game_server
         self.game_server.sendMessage(ServerMessageTypes.CREATETANK, {'Name': name})
         self.name = name
@@ -14,6 +15,7 @@ class BotInterface:
         self.heading = 0
         self.turret_heading = 0
         self.target = None
+        self.tracker = tracker
 
     def distance_to_object(self, coordinate: tuple):
         ox, oy = self.pos
