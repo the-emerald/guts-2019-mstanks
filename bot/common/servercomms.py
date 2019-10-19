@@ -5,6 +5,7 @@ import socket
 import logging
 import binascii
 import struct
+import time
 
 from bot.common.servermessagetypes import ServerMessageTypes
 
@@ -32,6 +33,8 @@ class ServerComms(object):
             buff_data = self.ServerSocket.recv(length - len(message_data))
             if buff_data:
                 message_data += buff_data
+            # yield to other threads while waiting for more data
+            time.sleep(0)
         return message_data
 
     def readMessage(self):
