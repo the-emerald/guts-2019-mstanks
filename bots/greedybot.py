@@ -35,8 +35,10 @@ class GreedyBot(BotInterface):
             moved = True
         if moved:
             self.game_server.sendMessage(ServerMessageTypes.STOPALL)
-
-        # TODO: Make the bot orbit (still haven't figured out how to out it)
+            target_coords = self.tracker.positions[target].pos
+            target_angle = (self.angle_to_object(target_coords) + 80) % 360
+            self.game_server.sendMessage(ServerMessageTypes.TURNTOHEADING, {"Amount": target_angle})
+            self.game_server.sendMessage(ServerMessageTypes.MOVEFORWARDDISTANCE, {"Amount": 10})
         # TODO: If an enemy bot is spotted inside the trigger range, and it is low on health, then run towards the box
 
 
