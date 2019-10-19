@@ -19,9 +19,11 @@ class BotInterface:
         """
         return payload["X"], payload["Y"]
 
-    # TODO: Method that returns a tuple of angle and distance to an object
-    def distance_angle_object(self, coordinate: tuple, heading: int):
-        pass
+    def angle_to_object(self, coordinate: tuple):
+        x, y = coordinate
+        delta_x = self.xpos - x
+        delta_y = self.ypos - y
+        return math.sqrt(delta_x ** 2 + delta_y ** 2)
 
     def distance_to_object(self, coordinate: tuple):
         x, y = coordinate
