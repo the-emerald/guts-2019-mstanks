@@ -13,6 +13,7 @@ class BotInterface:
         self.pos = [0, 0]
         self.heading = 0
         self.turret_heading = 0
+        self.target = None
 
     def distance_to_object(self, coordinate: tuple):
         ox, oy = self.pos
