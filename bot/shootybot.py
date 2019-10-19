@@ -15,7 +15,8 @@ class ShootyBot(BotInterface):
 
     def action(self):
         self.game_server.sendMessage(ServerMessageTypes.TOGGLELEFT)
-        if not self.last_message["messageType"] == ServerMessageTypes.OBJECTUPDATE:
+        if self.last_message["messageType"] != ServerMessageTypes.OBJECTUPDATE or \
+           self.last_message["Name"] == self.name:
             return
         target_coordinates = self.get_coords(self.last_message)
         self.game_server.sendMessage(ServerMessageTypes.TURNTURRETTOHEADING, {"Amount": self.angle_to_object(
