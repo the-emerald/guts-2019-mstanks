@@ -11,6 +11,8 @@ class BotInterface:
         self.game_server.sendMessage(ServerMessageTypes.CREATETANK, {'Name': name})
         self.name = name
         self.pos = [0, 0]
+        self.heading = 0
+        self.turret_heading = 0
 
     def distance_to_object(self, coordinate: tuple):
         ox, oy = self.pos
@@ -24,11 +26,13 @@ class BotInterface:
         x, y = coordinate
         delta_x = x - ox
         delta_y = y - oy
-        return ((math.atan2(delta_y, delta_x) * (180 / math.pi)) - 360) % 360
+        return abs(((math.atan2(delta_y, delta_x) * (180 / math.pi)) - 360)) % 360
 
     def handle_message(self, message: Dict):
         if message['messageType'] == ServerMessageTypes.OBJECTUPDATE and message['Name'] == self.name:
             self.pos = self.get_coords(message)
+            self.heading = message['Heading']
+            self.turret_heading = message['TurretHeading']
 
     def rx(self):
         raise NotImplementedError
