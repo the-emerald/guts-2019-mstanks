@@ -1,6 +1,7 @@
 from enum import Enum
 
 from bot.common.botinterface import BotInterface
+from bot.common.servermessagetypes import ServerMessageTypes
 
 
 class CirclingBotStatuses(Enum):
@@ -12,7 +13,8 @@ class CirclingBot(BotInterface):
         super(CirclingBot, self).__init__()
         self.last_message = None
         self.messages = []
-        self.current_status = None
+        self.current_status = CirclingBotStatuses.ACQUIRING
+        self.standoff_distance = 10
 
     def rx(self):
         self.last_message = self.game_server.readMessage()
@@ -20,8 +22,24 @@ class CirclingBot(BotInterface):
 
     def action(self):
         # Assuming the controller updates the target...
-        # Acquire the target
+        target_coords = (0, 0)   # TODO: Implement a way to get target coordinates
+        target_angle = self.angle_to_object(target_coords)
+        self.game_server.sendMessage(ServerMessageTypes.TURNTOHEADING, {"Amount": target_angle})
+        if self.current_status == CirclingBotStatuses.ACQUIRING and self.heading == target_angle:
+            # ^^ may need a "good-enough" filter
+            self.current_status = CirclingBotStatuses.APPROACHING
+
         # Approach the target
+        if self.current_status == CirclingBotStatuses.APPROACHING:
+            while self.distance_to_object(target_coords) <= self.standoff_distance:
+                self.game_server.sendMessage(ServerMessageTypes.MOVEFORWARDDISTANCE, {"Amount": 9000})
+            self.game_server.sendMessage(ServerMessageTypes.STOPALL)
+            self.current_status = CirclingBotStatuses.CIRCLING
+
+        if self.current_status == CirclingBotStatuses.CIRCLING:
+            pass # TODO: Implement method that vectors the bot to go in a circle
+
+
         # Circle the target
         # If controller switches targets then retreat.
         pass
