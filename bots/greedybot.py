@@ -24,12 +24,12 @@ class GreedyBot(BotInterface):
         if not target:
             return
         target_coords = self.tracker.positions[target].pos
-        target_distance = self.distance_to_object(target_coords)
-        target_angle = self.angle_to_object(target_coords)
 
         # Go to standoff distance
         moved = False
         while self.distance_to_object(target_coords) >= self.standoff:
+            target_distance = self.distance_to_object(target_coords)
+            target_angle = self.angle_to_object(target_coords)
             self.game_server.sendMessage(ServerMessageTypes.TURNTOHEADING, {"Amount": target_angle})
             self.game_server.sendMessage(ServerMessageTypes.MOVEFORWARDDISTANCE, {"Amount": target_distance})
             moved = True
