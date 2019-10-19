@@ -7,6 +7,7 @@ from typing import List
 from bot.common.botinterface import BotInterface
 from bot.common.servercomms import ServerComms
 from bot.shootybot import ShootyBot
+from bot.circlingbot import CirclingBot
 from bot.controller.tracker import Tracker
 
 
@@ -65,7 +66,7 @@ class Controller:
                 self.messages.put(message)
 
         gs = ServerComms(self.host, self.port)
-        bot = ShootyBot(gs, f'{self.team}:{idx}', self.tracker)
+        bot = CirclingBot(gs, f'{self.team}:{idx}', self.tracker)
         self.bots.append(bot)
 
         threading.Thread(target=rx_thread).start()

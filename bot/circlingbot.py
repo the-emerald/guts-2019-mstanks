@@ -1,7 +1,9 @@
 from enum import Enum
 
 from bot.common.botinterface import BotInterface
+from bot.common.servercomms import ServerComms
 from bot.common.servermessagetypes import ServerMessageTypes
+from bot.controller.tracker import Tracker
 
 
 class CirclingBotStatuses(Enum):
@@ -9,8 +11,8 @@ class CirclingBotStatuses(Enum):
 
 
 class CirclingBot(BotInterface):
-    def __init__(self):
-        super(CirclingBot, self).__init__()
+    def __init__(self, game_server: ServerComms, name: str, tracker: Tracker):
+        super(CirclingBot, self).__init__(game_server, name, tracker)
         self.last_message = None
         self.messages = []
         self.current_status = CirclingBotStatuses.ACQUIRING
@@ -27,7 +29,7 @@ class CirclingBot(BotInterface):
 
     def action(self):
         # Assuming the controller updates the target...
-        target_coords = (0, 0)   # TODO: Implement a way to get target coordinates
+        target_coords = self.target  # get coordinates from target
         target_angle = self.angle_to_object(target_coords)
         self.game_server.sendMessage(ServerMessageTypes.TURNTOHEADING, {"Amount": target_angle})
         if self.current_status == CirclingBotStatuses.ACQUIRING and self.heading == target_angle:
