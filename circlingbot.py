@@ -20,6 +20,11 @@ class CirclingBot(BotInterface):
         self.last_message = self.game_server.readMessage()
         self.handle_message(self.last_message) # Does the updating
 
+    def next_movement_vector(self):
+        # Determine where target is
+        # Create step such that step size is reasonable and angle makes it turn
+        return 0, 0
+
     def action(self):
         # Assuming the controller updates the target...
         target_coords = (0, 0)   # TODO: Implement a way to get target coordinates
@@ -37,7 +42,7 @@ class CirclingBot(BotInterface):
             self.current_status = CirclingBotStatuses.CIRCLING
 
         if self.current_status == CirclingBotStatuses.CIRCLING:
-            pass # TODO: Implement method that vectors the bot to go in a circle
+            move_distance, move_degree = self.next_movement_vector()
 
 
         # Circle the target
