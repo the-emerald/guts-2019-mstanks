@@ -34,24 +34,10 @@ class CirclingBot(BotInterface):
         target = self.target  # get coordinates from target
         if not target:
             return
-        logging.debug("target %s", self.target)
         target_coords = self.tracker.positions[target].pos
-        target_angle = self.angle_to_object(target_coords)
+        target_angle = (self.angle_to_object(target_coords) + 80) % 360
         self.game_server.sendMessage(ServerMessageTypes.TURNTOHEADING, {"Amount": target_angle})
-        if self.current_status == CirclingBotStatuses.ACQUIRING and self.heading == target_angle:
-            # ^^ may need a "good-enough" filter
-            self.current_status = CirclingBotStatuses.APPROACHING
-
-        # Approach the target
-        if self.current_status == CirclingBotStatuses.APPROACHING:
-            while self.distance_to_object(target_coords) <= self.standoff_distance:
-                self.game_server.sendMessage(ServerMessageTypes.MOVEFORWARDDISTANCE, {"Amount": 9000})
-            self.game_server.sendMessage(ServerMessageTypes.STOPALL)
-            self.current_status = CirclingBotStatuses.CIRCLING
-
-        if self.current_status == CirclingBotStatuses.CIRCLING:
-            move_distance, move_degree = self.next_movement_vector()
-
+        self.game_server.sendMessage(ServerMessageTypes.MOVEFORWARDDISTANCE, {"Amount": 10})
 
         # Circle the target
         # If controller switches targets then retreat.

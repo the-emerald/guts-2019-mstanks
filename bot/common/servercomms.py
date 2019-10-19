@@ -55,10 +55,6 @@ class ServerComms(object):
             message_payload = json.loads(message_data.decode('utf-8'))
             message_payload['messageType'] = message_type
 
-        logging.debug('Turned message {} into type {} payload {}'.format(
-            binascii.hexlify(message_data),
-            self.MessageTypes.toString(message_type),
-            message_payload))
         return message_payload
 
     def sendMessage(self, messageType=None, messagePayload=None):
@@ -80,8 +76,4 @@ class ServerComms(object):
         else:
             message.append(0)
 
-        logging.debug('Turned message type {} payload {} into {}'.format(
-            self.MessageTypes.toString(messageType),
-            messagePayload,
-            binascii.hexlify(message)))
         return self.ServerSocket.send(message)
