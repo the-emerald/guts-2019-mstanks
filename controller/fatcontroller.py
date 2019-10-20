@@ -4,14 +4,14 @@ import time
 from queue import Queue, Empty
 from typing import List
 
-from common.botinterface import BotInterface
+from common.bot import Bot
 from common.servercomms import ServerComms
-from bots.circlingbot import CirclingBot
 from controller.tracker import Tracker
+from strategies.circling import CirclingStrategy
 
 
 class Controller:
-    bots: List[BotInterface]
+    bots: List[Bot]
 
     def __init__(self, host='127.0.0.1', port=8052, team='MELL', max_bots=4):
         self.bots = []
@@ -49,7 +49,7 @@ class Controller:
 
                     targ = None
                     for entity_id, state in self.tracker.positions.items():
-                        if state.type == 'Tank' and not state.name.startswith(self.team + ':'):
+                        if state.type == 'AmmoPickup' and not state.name.startswith(self.team + ':'):
                             targ = entity_id
 
                     for bot in self.bots:
@@ -65,7 +65,9 @@ class Controller:
                 self.messages.put(message)
 
         gs = ServerComms(self.host, self.port)
-        bot = CirclingBot(gs, f'{self.team}:{idx}', self.tracker)
+        bot = Bot(gs, f'{self.team}:{idx}', self.tracker)
+        # TODO swap strategies as needed
+        bot.strategy = CirclingStrategy()
         self.bots.append(bot)
 
         threading.Thread(target=rx_thread).start()

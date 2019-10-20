@@ -1,7 +1,7 @@
+import logging
 from typing import Dict
 
 from common.servermessagetypes import ServerMessageTypes
-import logging
 
 
 class ObjectState:

@@ -1,0 +1,36 @@
+[[package]]
+category = "main"
+description = "A library for automatically generating command line interfaces."
+name = "fire"
+optional = false
+python-versions = "*"
+version = "0.2.1"
+
+[package.dependencies]
+six = "*"
+termcolor = "*"
+
+[[package]]
+category = "main"
+description = "Python 2 and 3 compatibility utilities"
+name = "six"
+optional = false
+python-versions = ">=2.6, !=3.0.*, !=3.1.*"
+version = "1.12.0"
+
+[[package]]
+category = "main"
+description = "ANSII Color formatting for output in terminal."
+name = "termcolor"
+optional = false
+python-versions = "*"
+version = "1.1.0"
+
+[metadata]
+content-hash = "984bf55ab42e752d9f766484d2524e88d887e91171f1567abbda45cbd10a6214"
+python-versions = "^3.7"
+
+[metadata.hashes]
+fire = ["6865fefc6981a713d2ce56a2a2c92c56c729269f74a6cddd6f4b94d16ae084c9"]
+six = ["3350809f0555b11f552448330d0b52d5f24c91a322ea4a15ef22629740f3761c", "d16a0141ec1a18405cd4ce8b4613101da75da0e9a7aec5bdd4fa804d0e0eba73"]
+termcolor = ["1d6d69ce66211143803fbc56652b41d73b4a400a2891d7bf7a1cdf4c02de613b"]

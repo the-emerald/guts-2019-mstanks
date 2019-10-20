@@ -7,7 +7,7 @@ from common.servermessagetypes import ServerMessageTypes
 from controller.tracker import Tracker
 
 
-class BotInterface:
+class Bot:
     def __init__(self, game_server: ServerComms, name: str, tracker: Tracker):
         self.game_server = game_server
         self.game_server.sendMessage(ServerMessageTypes.CREATETANK, {'Name': name})
@@ -17,6 +17,13 @@ class BotInterface:
         self.turret_heading = 0
         self.target = None
         self.tracker = tracker
+        self.strategy = None
+        self.last_message = None
+
+    def rx(self):
+        self.last_message = self.game_server.readMessage()
+        self.handle_message(self.last_message)  # Does the updating
+        return self.last_message
 
     def distance_to_object(self, coordinate: tuple):
         ox, oy = self.pos
@@ -61,11 +68,9 @@ class BotInterface:
                 if self.pos == goal:
                     at_goal = 1
 
-    def rx(self):
-        raise NotImplementedError
-
     def action(self):
-        raise NotImplementedError
+        if self.strategy:
+            self.strategy.action(self)
 
     @staticmethod
     def get_coords(payload):

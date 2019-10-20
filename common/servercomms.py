@@ -1,8 +1,8 @@
 #!/usr/bin/python
 
 import json
-import socket
 import logging
+import socket
 import struct
 import time
 
