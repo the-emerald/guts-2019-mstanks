@@ -99,28 +99,18 @@ class Bot:
         x, y = self.pos
         at_goal = 0
         if y >= 0:
-            goal = 0, 101
             while not at_goal:
-                x, y = self.pos
-                if y >= 90:
-                    while abs(x) >= 15:
-                        goal = 0, 89
-                        get_close()
-                        goal = 0, 101
-                    get_close()
+                goal = 0, 85
+                get_close()
+                goal = 0, 110
                 get_close()
                 if self.compare_pos(goal):
                     at_goal = 1
         else:
-            goal = 0, -101
             while not at_goal:
-                x, y = self.pos
-                if y <= -90:
-                    while abs(x) >= 15:
-                        goal = 0, -89
-                        get_close()
-                        goal = 0, -101
-                    get_close()
+                goal = 0, -85
+                get_close()
+                goal = 0, -110
                 get_close()
                 if self.compare_pos(goal):
                     at_goal = 1
