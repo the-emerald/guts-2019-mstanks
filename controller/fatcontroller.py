@@ -13,7 +13,8 @@ from strategies.circling import CirclingStrategy
 class Controller:
     bots: List[Bot]
 
-    def __init__(self, host='127.0.0.1', port=8052, team='MELL', max_bots=4):
+    def __init__(self, host='127.0.0.1', port=8052, team='MELL', max_bots=4, log_level=logging.INFO, ui=True):
+        logging.basicConfig(level=log_level)
         self.bots = []
         self.host = host
         self.port = port
@@ -26,8 +27,8 @@ class Controller:
     def run(self):
         for i in range(0, self.max_bots):
             def _start(idx=i):
-                print(f"Spawning bot {idx}")
-                thread = threading.Thread(target=lambda: self.start_bot(idx))
+                logging.debug("Starting bot thread %s", idx)
+                thread = threading.Thread(target=lambda: self.start_bot(idx), daemon=True)
                 thread.start()
 
             _start()
@@ -80,7 +81,6 @@ if __name__ == '__main__':
     import fire
     import sys
 
-    logging.basicConfig(level=logging.DEBUG)
     command = sys.argv[1:]
     if len(command) == 0:
         command = ["run"]

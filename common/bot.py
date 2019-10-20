@@ -1,3 +1,4 @@
+import logging
 import math
 import time
 from typing import Dict
@@ -19,6 +20,7 @@ class Bot:
         self.tracker = tracker
         self.strategy = None
         self.last_message = None
+        logging.info("Spawned bot %s", name)
 
     def rx(self):
         self.last_message = self.game_server.readMessage()
