@@ -8,7 +8,6 @@ from common.bot import Bot
 from common.servercomms import ServerComms
 from controller.tracker import Tracker
 from strategies.movement.circling import CirclingStrategy
-
 from strategies.movement.goal import GoalStrategy
 from strategies.turret.turretspin import TurretSpin
 
@@ -69,7 +68,7 @@ class Controller:
                 try:
                     message = self.messages.get(timeout=2)
                     logging.debug('Message %s', message)
-                    self.tracker.handle_message(message)
+                    self.tracker.handle_message(message, self.bots)
                     if not started and message:
                         started = True
                         logging.info("Started")
@@ -99,7 +98,8 @@ class Controller:
                         new_targ_id = new_targ.id if new_targ else None
                         if new_targ_id != bot.target:
                             bot.target = new_targ_id
-                            logging.info("%s is now targeting %s:%s", bot.name, new_targ.type, new_targ.name)
+                            if new_targ:
+                                logging.info("%s is now targeting %s:%s", bot.name, new_targ.type, new_targ.name)
 
         except BaseException as _:
             self.halt = True

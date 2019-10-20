@@ -53,7 +53,7 @@ class Tracker:
         self.time = 0
         self.team = team + ':'
 
-    def handle_message(self, message):
+    def handle_message(self, message, bots):
         if message['messageType'] == ServerMessageTypes.GAMETIMEUPDATE:
             self.time = message['Time']
         if message['messageType'] == ServerMessageTypes.OBJECTUPDATE:
@@ -76,6 +76,10 @@ class Tracker:
             except KeyError:
                 pass
             state = ObjectState(pos, heading, turret_heading, type, id, name, alignment, last, health, ammo)
+            for bot in bots:
+                if bot.name == state.name:
+                    bot.ammo = state.ammo
+                    bot.health = state.health
             self.positions[id] = state
             logging.debug('Tracked %s at %s', name, pos)
         if message['messageType'] == ServerMessageTypes.SNITCHPICKUP:

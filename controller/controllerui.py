@@ -1,12 +1,11 @@
+import json
 import os
 import time
-import tkinter
-import json
 from http import HTTPStatus
 from http.server import ThreadingHTTPServer, SimpleHTTPRequestHandler
 
 from controller.fatcontroller import Controller
-from controller.tracker import ObjectState, Alignment
+from controller.tracker import Alignment
 
 CANVAS_W = 500
 CANVAS_H = 400
