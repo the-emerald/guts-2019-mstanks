@@ -75,6 +75,9 @@ class ControllerUi:
 
 def handler(ui: ControllerUi):
     class RequestHandler(SimpleHTTPRequestHandler):
+        def log_message(self, format, *args):
+            pass
+
         def __init__(self, *args, **kwargs):
             directory = os.path.dirname(os.path.realpath(__file__)) + '/web/'
             super().__init__(*args, directory=directory, **kwargs)

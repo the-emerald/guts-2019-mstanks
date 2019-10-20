@@ -12,6 +12,7 @@ class Bot:
     heading: int
 
     def __init__(self, game_server: ServerComms, name: str, tracker: Tracker):
+        self.last_fire_time = 0
         self.game_server = game_server
         self.game_server.sendMessage(ServerMessageTypes.CREATETANK, {'Name': name})
         self.name = name
@@ -102,7 +103,6 @@ class Bot:
                 if self.compare_pos(goal):
                     at_goal = 1
 
-
     def compare_pos(self, loc):
         if self.pos - 1 <= loc <= self.pos + 1:
             return 1
@@ -121,3 +121,18 @@ class Bot:
         :return: The tuple of coordinates
         """
         return payload["X"], payload["Y"]
+
+    def can_fire(self):
+        # TODO: ammo state?
+        return (time.time() - self.last_fire_time) > 2
+
+    def fire(self):
+        if self.can_fire():
+            self.last_fire_time = time.time()
+            self.game_server.sendMessage(ServerMessageTypes.FIRE)
+        else:
+            logging.warning("can't fire for %s as recently fired", self.name)
+        pass
+
+    def turn_turret_to_heading(self, heading):
+        self.game_server.sendMessage(ServerMessageTypes.TURNTURRETTOHEADING, {"Amount": heading})

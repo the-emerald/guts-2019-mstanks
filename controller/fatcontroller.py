@@ -44,6 +44,7 @@ class Controller:
                 thread.start()
 
             _start()
+            time.sleep(0.1)
 
         # noinspection PyBroadException
         # we need to catch everything to stop background tasks
@@ -80,6 +81,16 @@ class Controller:
                 message = bot.rx()
                 self.messages.put(message)
 
+        def turret_loop():
+            while not self.halt:
+                bot.turret_strategy.action(bot)
+                time.sleep(1 / 16)
+
+        def movement_loop():
+            while not self.halt:
+                bot.movement_strategy.action(bot)
+                time.sleep(1 / 16)
+
         gs = ServerComms(self.host, self.port)
         bot = Bot(gs, f'{self.team}:{idx}', self.tracker)
         # TODO swap strategies as needed
@@ -89,9 +100,11 @@ class Controller:
 
         rx_thread = threading.Thread(target=rx_loop, daemon=True)
         rx_thread.start()
-        while not self.halt:
-            bot.action()
-            time.sleep(1 / 16)
+
+        turret_thread = threading.Thread(target=turret_loop, daemon=True)
+        turret_thread.start()
+
+        movement_loop()
 
     def change_strategy(self, strat):
         for bot in self.bots:
