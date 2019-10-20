@@ -18,7 +18,8 @@ class Bot:
         self.turret_heading = 0
         self.target = None
         self.tracker = tracker
-        self.strategy = None
+        self.movement_strategy = None
+        self.turret_strategy = None
         self.last_message = None
         logging.info("Spawned bot %s", name)
 
@@ -84,8 +85,8 @@ class Bot:
                     at_goal = 1
 
     def action(self):
-        if self.strategy:
-            self.strategy.action(self)
+        if self.movement_strategy:
+            self.movement_strategy.action(self)
 
     @staticmethod
     def get_coords(payload):
