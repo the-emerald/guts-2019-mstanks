@@ -12,19 +12,30 @@ from strategies.circling import CirclingStrategy
 
 class Controller:
     bots: List[Bot]
+    threads: List[threading.Thread]
 
     def __init__(self, host='127.0.0.1', port=8052, team='MELL', max_bots=4, log_level=logging.INFO, ui=True):
         logging.basicConfig(level=log_level)
         self.bots = []
+        self.threads = []
         self.host = host
         self.port = port
         self.team = team
         self.max_bots = max_bots
+        self.ui = ui
         self.halt = False
         self.messages = Queue()
         self.tracker = Tracker(team)
 
     def run(self):
+        if self.ui:
+            # local import as don't want to make tkinter load if not using it
+            from controller.controllerui import ControllerUi
+            ui = ControllerUi(self)
+            ui_thread = threading.Thread(target=lambda: ui.start_ui(), daemon=True)
+            self.threads.append(ui_thread)
+            ui_thread.start()
+
         for i in range(0, self.max_bots):
             def _start(idx=i):
                 logging.debug("Starting bot thread %s", idx)
@@ -33,6 +44,9 @@ class Controller:
 
             _start()
 
+        # noinspection PyBroadException
+        # we need to catch everything to stop background tasks
+        # we will then re raise it, so it's okay
         try:
             last_time = time.time()
             while True:
@@ -55,12 +69,12 @@ class Controller:
 
                     for bot in self.bots:
                         bot.target = targ
-                    logging.debug("Target: %s", targ)
-        except KeyboardInterrupt:
+        except BaseException as _:
             self.halt = True
+            raise
 
     def start_bot(self, idx):
-        def rx_thread():
+        def rx_loop():
             while not self.halt:
                 message = bot.rx()
                 self.messages.put(message)
@@ -71,7 +85,8 @@ class Controller:
         bot.strategy = CirclingStrategy()
         self.bots.append(bot)
 
-        threading.Thread(target=rx_thread).start()
+        rx_thread = threading.Thread(target=rx_loop, daemon=True)
+        rx_thread.start()
         while not self.halt:
             bot.action()
             time.sleep(1 / 16)
