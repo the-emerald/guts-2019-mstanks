@@ -36,6 +36,6 @@ def check_firing_solution_clear(targets: dict, gun_position: tuple, solution: fl
     for key, value in targets.items():
         if value.alignment != Alignment.FRIEND:
             continue
-        if solution == calculate_firing_solution(gun_position, value):
+        if abs(solution-calculate_firing_solution(gun_position, value)) <= 5:
             return True
     return False
