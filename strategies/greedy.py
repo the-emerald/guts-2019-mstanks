@@ -12,7 +12,9 @@ class GreedyStrategy(Strategy):
 
     def in_range(self, bot: Bot):
         x, y = bot.target.pos
-        for key, value in bot.tracker.positions:
+        for key, value in bot.tracker.positions.items():
+            if value.is_stale():
+                continue
             if bot.distance_to_object(value.pos) <= self.trigger:
                 return True
         return False
