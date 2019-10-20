@@ -1,4 +1,5 @@
 import logging
+import time
 
 from common import targeting
 from common.servermessagetypes import ServerMessageTypes
@@ -12,6 +13,7 @@ class TurretSpin(Strategy):
         self.want_spin = True
         self.spin = False
         self.start = True
+        self.spin_time = 0
 
     def try_shoot(self, bot):
         if bot.target and bot.ammo > 0:
@@ -45,6 +47,10 @@ class TurretSpin(Strategy):
         return False
 
     def action(self, bot):
+        now = time.time()
+        if self.spin and (now - self.spin_time) > 2:
+            self.spin = False
+
         trying_to_shoot = self.try_shoot(bot)
         self.want_spin = not trying_to_shoot
 
@@ -54,6 +60,7 @@ class TurretSpin(Strategy):
         if self.want_spin and not self.spin:
             bot.game_server.sendMessage(ServerMessageTypes.TOGGLETURRETRIGHT)
             self.spin = True
+            self.spin_time = now
         if not self.want_spin and self.spin:
             bot.game_server.sendMessage(ServerMessageTypes.STOPTURRET)
             self.spin = False
