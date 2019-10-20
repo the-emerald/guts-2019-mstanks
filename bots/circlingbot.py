@@ -22,7 +22,9 @@ class CirclingBot(BotInterface):
         if not target:
             return
         target_coords = self.tracker.positions[target].pos
-        target_angle = (self.angle_to_object(target_coords) + 80) % 360
-        self.game_server.sendMessage(ServerMessageTypes.TURNTOHEADING, {"Amount": target_angle})
+        target_dist = self.distance_to_object(target_coords)
+        target_angle = self.angle_to_object(target_coords)
+        heading = (target_angle + 45 + 45 / target_dist) % 360
+        self.game_server.sendMessage(ServerMessageTypes.TURNTOHEADING, {"Amount": heading})
         self.game_server.sendMessage(ServerMessageTypes.MOVEFORWARDDISTANCE, {"Amount": 10})
         pass
