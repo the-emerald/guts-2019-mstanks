@@ -68,6 +68,7 @@ class Bot:
         return
 
     def on_respawn(self):
+        self.respawn_time = None
         self.health = 3
         self.ammo = 10
 
