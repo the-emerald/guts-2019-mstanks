@@ -1,3 +1,5 @@
+import time
+
 from common.botinterface import BotInterface
 from common.servercomms import ServerComms
 from common.servermessagetypes import ServerMessageTypes
@@ -9,7 +11,7 @@ class GreedyBot(BotInterface):
         super().__init__(game_server, name, tracker)
         self.last_message = None
         self.do_not_take_boxes = []  # TODO: Update fat controller to determine and update this
-        self.standoff = 20
+        self.standoff = 10
         self.trigger = 25
 
     def rx(self):
@@ -33,6 +35,7 @@ class GreedyBot(BotInterface):
             self.game_server.sendMessage(ServerMessageTypes.TURNTOHEADING, {"Amount": target_angle})
             self.game_server.sendMessage(ServerMessageTypes.MOVEFORWARDDISTANCE, {"Amount": target_distance})
             moved = True
+            time.sleep(0.1)
         if moved:
             self.game_server.sendMessage(ServerMessageTypes.STOPALL)
             target_coords = self.tracker.positions[target].pos
@@ -40,7 +43,3 @@ class GreedyBot(BotInterface):
             self.game_server.sendMessage(ServerMessageTypes.TURNTOHEADING, {"Amount": target_angle})
             self.game_server.sendMessage(ServerMessageTypes.MOVEFORWARDDISTANCE, {"Amount": 10})
         # TODO: If an enemy bot is spotted inside the trigger range, and it is low on health, then run towards the box
-
-
-
-
