@@ -21,11 +21,13 @@ class Bot:
         self.kills = 0
         self.heading = 0
         self.turret_heading = 0
+        self.health = 3
         self.target = None
         self.tracker = tracker
         self.movement_strategy = None
         self.turret_strategy = None
         self.last_message = None
+        self.respawn_time = None
         logging.info("Spawned bot %s", name)
 
     def rx(self):
@@ -56,7 +58,18 @@ class Bot:
         if ty == ServerMessageTypes.KILL:
             self.kills += 1
             logging.info("%s scored a point", self.name)
+        if ty == ServerMessageTypes.AMMOPICKUP:
+            self.ammo = 10
+        if ty == ServerMessageTypes.HITDETECTED:
+            self.health -= 1
+        if ty == ServerMessageTypes.DESTROYED:
+            logging.info("Died bot %s", name)
+            self.respawn_time = time.time() + 5
         return
+
+    def on_respawn(self):
+        self.health = 3
+        self.ammo = 10
 
     def need_dodge(self, firepos, fireheading):
         a = self.angle_to_object(firepos)

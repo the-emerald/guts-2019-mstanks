@@ -74,11 +74,16 @@ class Controller:
 
                 if cur_time - last_time > 1:
                     for bot in self.bots:
-                        if bot.movement_strategy.done:
-                            bot.movement_strategy = CirclingStrategy()
+                        if bot.respawn_time:
+                            if bot.respawn_time < time.time():
+                                bot.on_respawn()
+                            continue
 
                         if bot.kills > 0:
                             bot.movement_strategy = GoalStrategy()
+
+                        if bot.movement_strategy.done:
+                            bot.movement_strategy = CirclingStrategy()
 
                         self.pick_target(bot)
 
@@ -94,12 +99,14 @@ class Controller:
 
         def turret_loop():
             while not self.halt:
-                bot.turret_strategy.action(bot)
+                if bot.turret_strategy:
+                    bot.turret_strategy.action(bot)
                 time.sleep(1 / 16)
 
         def movement_loop():
             while not self.halt:
-                bot.movement_strategy.action(bot)
+                if bot.movement_strategy:
+                    bot.movement_strategy.action(bot)
                 time.sleep(1 / 16)
 
         gs = ServerComms(self.host, self.port)
@@ -117,11 +124,6 @@ class Controller:
         turret_thread.start()
 
         movement_loop()
-
-    def change_strategy(self, strat):
-        for bot in self.bots:
-            bot.strategy = ShootyStrategy()
-        pass
 
 
 if __name__ == '__main__':

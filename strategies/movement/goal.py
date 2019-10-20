@@ -13,3 +13,4 @@ class GoalStrategy(Strategy):
         bot.return_to_goal()
         bot.kills = 0
         self.done = True
+        logging.info("%s returned to goal", bot.name)

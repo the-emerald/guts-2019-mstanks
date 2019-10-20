@@ -38,7 +38,7 @@ class ObjectState:
                 self.velocity = last.velocity
 
     def is_stale(self):
-        return time.time() - self.time > ObjectState.STALE_TIME
+        return (time.time() - self.time) > ObjectState.STALE_TIME
 
 
 class Tracker:
