@@ -7,7 +7,8 @@ from typing import List
 from common.bot import Bot
 from common.servercomms import ServerComms
 from controller.tracker import Tracker
-from strategies.circling import CirclingStrategy
+from strategies.movement.circling import CirclingStrategy
+from strategies.turret.turretspin import TurretSpin
 
 
 class Controller:
@@ -82,7 +83,8 @@ class Controller:
         gs = ServerComms(self.host, self.port)
         bot = Bot(gs, f'{self.team}:{idx}', self.tracker)
         # TODO swap strategies as needed
-        bot.strategy = CirclingStrategy()
+        bot.movement_strategy = CirclingStrategy()
+        bot.turret_strategy = TurretSpin()
         self.bots.append(bot)
 
         rx_thread = threading.Thread(target=rx_loop, daemon=True)
