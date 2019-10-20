@@ -1,7 +1,7 @@
-from typing import Dict, Any
-
-from bot.common.servermessagetypes import ServerMessageTypes
 import logging
+from typing import Dict
+
+from common.servermessagetypes import ServerMessageTypes
 
 
 class ObjectState:

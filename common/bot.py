@@ -1,12 +1,13 @@
 import math
+import time
 from typing import Dict
 
-from bot.common.servercomms import ServerComms
-from bot.common.servermessagetypes import ServerMessageTypes
-from bot.controller.tracker import Tracker
+from common.servercomms import ServerComms
+from common.servermessagetypes import ServerMessageTypes
+from controller.tracker import Tracker
 
 
-class BotInterface:
+class Bot:
     def __init__(self, game_server: ServerComms, name: str, tracker: Tracker):
         self.game_server = game_server
         self.game_server.sendMessage(ServerMessageTypes.CREATETANK, {'Name': name})
@@ -16,6 +17,13 @@ class BotInterface:
         self.turret_heading = 0
         self.target = None
         self.tracker = tracker
+        self.strategy = None
+        self.last_message = None
+
+    def rx(self):
+        self.last_message = self.game_server.readMessage()
+        self.handle_message(self.last_message)  # Does the updating
+        return self.last_message
 
     def distance_to_object(self, coordinate: tuple):
         ox, oy = self.pos
@@ -36,6 +44,7 @@ class BotInterface:
             self.pos = self.get_coords(message)
             self.heading = message['Heading']
             self.turret_heading = message['TurretHeading']
+        return
 
     def dodge(self, selfpos, selfheading: int, firepos, fireheading: int):
         a = self.angle_to_object(firepos)
@@ -46,18 +55,35 @@ class BotInterface:
                 heading = (firepos + 90) % 360
             elif b - 10 <= selfheading <= b + 10:
                 heading = (firepos - 90) % 360
-
             if heading:
                 self.game_server.sendMessage(ServerMessageTypes.TURNTOHEADING, {"Amount": heading})
                 self.game_server.sendMessage(ServerMessageTypes.MOVEFORWARDDISTANCE, {"Amount": 15})
 
-        return
+    def return_to_goal(self):
+        def get_close():
+            self.game_server.sendMessage(ServerMessageTypes.TURNTOHEADING, {"Amount": self.angle_to_object(goal)})
+            self.game_server.sendMessage(ServerMessageTypes.MOVEFORWARDDISTANCE, {"Amount": 10})
+            time.sleep(1)
 
-    def rx(self):
-        raise NotImplementedError
+        x, y = self.pos
+        at_goal = 0
+        if y >= 0:
+            goal = 0, 101
+            while not at_goal:
+                x, y = self.pos
+                if y >= 90:
+                    while abs(x) >= 15:
+                        goal = 0, 89
+                        get_close()
+                        goal = 0, 101
+                    get_close()
+                get_close()
+                if self.pos == goal:
+                    at_goal = 1
 
     def action(self):
-        raise NotImplementedError
+        if self.strategy:
+            self.strategy.action(self)
 
     @staticmethod
     def get_coords(payload):
