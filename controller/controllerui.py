@@ -12,7 +12,11 @@ CANVAS_W = 500
 CANVAS_H = 400
 GAME_MIN_X = -70
 GAME_MIN_Y = -100
+GAME_W = GAME_MIN_X * -2
+GAME_H = GAME_MIN_Y * -2
 CANVAS_BORDER = 5
+RATIO_W = CANVAS_W / GAME_W
+RATIO_H = CANVAS_H / GAME_H
 
 
 def pos_to_canvas(pos):
@@ -33,7 +37,7 @@ class ControllerUi:
         lines = []
         rects = [
             # border
-            [x1, y1, x2 - x1, y2 - y1, 'red', 'blue']
+            [x1, y1, x2 - x1, y2 - y1, 'red', 'blue', 0, 0]
         ]
 
         to_draw = [state for state in self.controller.tracker.positions.values()]
@@ -47,8 +51,11 @@ class ControllerUi:
             outline = 'green'
             if state.is_stale():
                 outline = 'black'
-            rects.append([x - size / 2, y - size / 2, size, size, colour, outline])
-            text.append([x, y - 5, state.type + '-' + state.name, 'black'])
+            vx, vy = state.velocity
+            vx *= RATIO_W
+            vy *= RATIO_H
+            rects.append([x - size / 2, y - size / 2, size, size, colour, outline, vx, vy])
+            text.append([x, y - 5, state.type + '-' + state.name, 'black', vx, vy])
 
         return {
             'rects': rects,
