@@ -8,7 +8,6 @@ from common.bot import Bot
 from common.servercomms import ServerComms
 from controller.tracker import Tracker, Alignment
 from strategies.movement.circling import CirclingStrategy
-from strategies.movement.shooty import ShootyStrategy
 from strategies.turret.turretspin import TurretSpin
 
 
@@ -95,7 +94,7 @@ class Controller:
         gs = ServerComms(self.host, self.port)
         bot = Bot(gs, f'{self.team}:{idx}', self.tracker)
         # TODO swap strategies as needed
-        bot.movement_strategy = ShootyStrategy()
+        bot.movement_strategy = CirclingStrategy()
         bot.turret_strategy = TurretSpin()
         self.bots.append(bot)
 
