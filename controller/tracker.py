@@ -17,7 +17,9 @@ class ObjectState:
     name: str
     STALE_TIME = 5
 
-    def __init__(self, pos, heading, turret_heading, type, id, name, alignment, last):
+    def __init__(self, pos, heading, turret_heading, type, id, name, alignment, last, health, ammo):
+        self.health = health
+        self.ammo = ammo
         self.priority = False
         self.pos = pos
         self.heading = heading
@@ -62,25 +64,40 @@ class Tracker:
             id = message['Id']
             type = message['Type']
             alignment = Alignment.NEUTRAL
+            health = None
+            ammo = None
             if type == 'Tank':
                 alignment = Alignment.FRIEND if name.startswith(self.team) else Alignment.FOE
+                health = message['Health']
+                ammo = message['Ammo']
             last = None
             try:
                 last = self.positions[id]
             except KeyError:
                 pass
-            state = ObjectState(pos, heading, turret_heading, type, id, name, alignment, last)
+            state = ObjectState(pos, heading, turret_heading, type, id, name, alignment, last, health, ammo)
             self.positions[id] = state
             logging.debug('Tracked %s at %s', name, pos)
         if message['messageType'] == ServerMessageTypes.SNITCHPICKUP:
             self.positions[message['Id']].priority = True
+
+    def shoot_at(self, bot: ObjectState):
+        if bot.is_stale():
+            return False
+        if bot.type != 'Tank':
+            return False
+        if bot.alignment == Alignment.FOE:
+            return True
+        if bot.alignment == Alignment.FRIEND and bot.health == 1:
+            return True
+        return False
 
     def closest_enemy(self, bot):
         closest = 9999
         closest_state = None
 
         for v in self.positions.values():
-            if v.type == 'Tank' and v.alignment == Alignment.FOE and not v.is_stale():
+            if v.name != bot.name and self.shoot_at(v):
                 if v.priority:
                     return v
                 dist = bot.distance_to_object(v.pos)

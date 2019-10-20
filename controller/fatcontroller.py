@@ -31,12 +31,17 @@ class Controller:
         self.tracker = Tracker(team)
 
     def pick_target(self, bot):
+        targ = None
+
         if bot.can_fire():
             closest = self.tracker.closest_enemy(bot)
-            bot.target = closest.id if closest else None
-        else:
+            targ = closest.id if closest else None
+
+        if not targ:
             closest = self.tracker.closest_pickup(bot)
-            bot.target = closest.id if closest else None
+            targ = closest.id if closest else None
+
+        return targ
 
     def run(self):
         if self.ui:
@@ -60,7 +65,7 @@ class Controller:
         # we need to catch everything to stop background tasks
         # we will then re raise it, so it's okay
         try:
-            last_time = time.time()
+            last_time = 0
             while True:
                 try:
                     message = self.messages.get(timeout=2)
@@ -72,7 +77,7 @@ class Controller:
                 cur_time = time.time()
                 logging.debug("time %s last_time %s", cur_time, last_time)
 
-                if cur_time - last_time > 1:
+                if cur_time - last_time > 0.75:
                     for bot in self.bots:
                         if bot.respawn_time:
                             if bot.respawn_time < time.time():
@@ -85,7 +90,7 @@ class Controller:
                         if bot.movement_strategy.done:
                             bot.movement_strategy = CirclingStrategy()
 
-                        self.pick_target(bot)
+                        bot.target = self.pick_target(bot)
 
         except BaseException as _:
             self.halt = True

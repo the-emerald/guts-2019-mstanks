@@ -61,6 +61,7 @@ class Bot:
         if ty == ServerMessageTypes.AMMOPICKUP:
             self.ammo = 10
         if ty == ServerMessageTypes.HITDETECTED:
+            logging.info("%s hit", self.name)
             self.health -= 1
         if ty == ServerMessageTypes.DESTROYED:
             logging.info("Died bot %s", self.name)

@@ -2,7 +2,7 @@ import logging
 
 from common import targeting
 from common.servermessagetypes import ServerMessageTypes
-from controller.tracker import Alignment
+from controller.tracker import Alignment, ObjectState
 from strategies import Strategy
 
 
@@ -15,11 +15,13 @@ class TurretSpin(Strategy):
 
     def try_shoot(self, bot):
         if bot.target and bot.ammo > 0:
-            tgt = bot.tracker.positions[bot.target]
-            if not tgt.is_stale() and tgt.alignment == Alignment.FOE:
+            tgt: ObjectState = bot.tracker.positions[bot.target]
+            if not tgt.is_stale() and (tgt.alignment == Alignment.FOE or tgt.alignment == Alignment.FRIEND and tgt.health == 1):
                 dist = bot.distance_to_object(tgt.pos)
                 if dist > 30:
                     return False
+                if dist == 0:
+                    dist = 0.1
 
                 if not bot.can_fire():
                     return True
