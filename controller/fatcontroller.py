@@ -22,7 +22,7 @@ class Controller:
         self.max_bots = max_bots
         self.halt = False
         self.messages = Queue()
-        self.tracker = Tracker()
+        self.tracker = Tracker(team)
 
     def run(self):
         for i in range(0, self.max_bots):
