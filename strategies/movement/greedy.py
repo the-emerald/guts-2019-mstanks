@@ -7,6 +7,7 @@ from strategies import Strategy
 
 class GreedyStrategy(Strategy):
     def __init__(self):
+        super().__init__()
         self.standoff = 20
 
     def action(self, bot: Bot):

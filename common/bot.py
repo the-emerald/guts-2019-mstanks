@@ -17,6 +17,8 @@ class Bot:
         self.game_server.sendMessage(ServerMessageTypes.CREATETANK, {'Name': name})
         self.name = name
         self.pos = [0, 0]
+        self.ammo = 4
+        self.kills = 0
         self.heading = 0
         self.turret_heading = 0
         self.target = None
@@ -46,10 +48,14 @@ class Bot:
         return abs(((math.atan2(delta_y, delta_x) * (180 / math.pi)) - 360)) % 360
 
     def handle_message(self, message: Dict):
-        if message['messageType'] == ServerMessageTypes.OBJECTUPDATE and message['Name'] == self.name:
+        ty = message['messageType']
+        if ty == ServerMessageTypes.OBJECTUPDATE and message['Name'] == self.name:
             self.pos = self.get_coords(message)
             self.heading = message['Heading']
             self.turret_heading = message['TurretHeading']
+        if ty == ServerMessageTypes.KILL:
+            self.kills += 1
+            logging.info("%s scored a point", self.name)
         return
 
     def need_dodge(self, firepos, fireheading):
@@ -97,17 +103,14 @@ class Bot:
                     while abs(x) >= 15:
                         goal = 0, -89
                         get_close()
-                        goal = 0, 101
+                        goal = 0, -101
                     get_close()
                 get_close()
                 if self.compare_pos(goal):
                     at_goal = 1
 
     def compare_pos(self, loc):
-        if self.pos - 1 <= loc <= self.pos + 1:
-            return 1
-        else:
-            return 0
+        return self.distance_to_object(loc) < 10
 
     def action(self):
         if self.movement_strategy:
@@ -124,10 +127,11 @@ class Bot:
 
     def can_fire(self):
         # TODO: ammo state?
-        return (time.time() - self.last_fire_time) > 2
+        return self.ammo > 0 and (time.time() - self.last_fire_time) > 2
 
     def fire(self):
         if self.can_fire():
+            self.ammo -= 1
             self.last_fire_time = time.time()
             self.game_server.sendMessage(ServerMessageTypes.FIRE)
         else:

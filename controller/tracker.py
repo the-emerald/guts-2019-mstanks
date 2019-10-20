@@ -70,3 +70,29 @@ class Tracker:
             state = ObjectState(pos, heading, turret_heading, type, id, name, alignment, last)
             self.positions[id] = state
             logging.debug('Tracked %s at %s', name, pos)
+
+    def closest_enemy(self, bot):
+        closest = 9999
+        closest_state = None
+
+        for v in self.positions.values():
+            if v.type == 'Tank' and v.alignment == Alignment.FOE and not v.is_stale():
+                dist = bot.distance_to_object(v.pos)
+                if dist < closest:
+                    closest = dist
+                    closest_state = v
+
+        return closest_state
+
+    def closest_pickup(self, bot):
+        closest = 9999
+        closest_state = None
+
+        for v in self.positions.values():
+            if v.type.endswith('Pickup') and not v.is_stale():
+                dist = bot.distance_to_object(v.pos)
+                if dist < closest:
+                    closest = dist
+                    closest_state = v
+
+        return closest_state

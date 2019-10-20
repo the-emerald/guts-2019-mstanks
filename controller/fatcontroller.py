@@ -6,8 +6,10 @@ from typing import List
 
 from common.bot import Bot
 from common.servercomms import ServerComms
-from controller.tracker import Tracker, Alignment
+from controller.tracker import Tracker
 from strategies.movement.circling import CirclingStrategy
+
+from strategies.movement.goal import GoalStrategy
 from strategies.turret.turretspin import TurretSpin
 
 
@@ -27,6 +29,14 @@ class Controller:
         self.halt = False
         self.messages = Queue()
         self.tracker = Tracker(team)
+
+    def pick_target(self, bot):
+        if bot.can_fire():
+            closest = self.tracker.closest_enemy(bot)
+            bot.target = closest.id if closest else None
+        else:
+            closest = self.tracker.closest_pickup(bot)
+            bot.target = closest.id if closest else None
 
     def run(self):
         if self.ui:
@@ -61,16 +71,17 @@ class Controller:
 
                 cur_time = time.time()
                 logging.debug("time %s last_time %s", cur_time, last_time)
+
                 if cur_time - last_time > 1:
-                    last_time = cur_time
-
-                    targ = None
-                    for entity_id, state in self.tracker.positions.items():
-                        if state.alignment == Alignment.FOE and not state.name.startswith(self.team + ':'):
-                            targ = entity_id
-
                     for bot in self.bots:
-                        bot.target = targ
+                        if bot.movement_strategy.done:
+                            bot.movement_strategy = CirclingStrategy()
+
+                        if bot.kills > 0:
+                            bot.movement_strategy = GoalStrategy()
+
+                        self.pick_target(bot)
+
         except BaseException as _:
             self.halt = True
             raise
@@ -93,6 +104,7 @@ class Controller:
 
         gs = ServerComms(self.host, self.port)
         bot = Bot(gs, f'{self.team}:{idx}', self.tracker)
+
         # TODO swap strategies as needed
         bot.movement_strategy = CirclingStrategy()
         bot.turret_strategy = TurretSpin()
