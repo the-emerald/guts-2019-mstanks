@@ -1,17 +1,23 @@
+import os
 import time
 import tkinter
+import json
+from http import HTTPStatus
+from http.server import ThreadingHTTPServer, SimpleHTTPRequestHandler
 
 from controller.fatcontroller import Controller
 from controller.tracker import ObjectState, Alignment
 
-CANVAS_W = 200
-CANVAS_H = 200
+CANVAS_W = 500
+CANVAS_H = 400
+GAME_MIN_X = -70
+GAME_MIN_Y = -100
 CANVAS_BORDER = 5
 
 
 def pos_to_canvas(pos):
     x, y = pos
-    return CANVAS_BORDER + (((x + 100) / 200) * CANVAS_W), CANVAS_BORDER + (((y + 70) / 140) * CANVAS_H)
+    return CANVAS_BORDER + (((x - GAME_MIN_X) / 200) * CANVAS_W), CANVAS_BORDER + (((y - GAME_MIN_Y) / 140) * CANVAS_H)
 
 
 class ControllerUi:
@@ -19,12 +25,16 @@ class ControllerUi:
         self.controller = controller
         pass
 
-    def draw_tracking(self, c: tkinter.Canvas):
-        c.delete("all")
+    def draw_tracking(self):
+        x1, y1 = pos_to_canvas((GAME_MIN_X, GAME_MIN_Y))
+        x2, y2 = pos_to_canvas((-GAME_MIN_X, -GAME_MIN_Y))
 
-        x1, y1 = pos_to_canvas((-70, -100))
-        x2, y2 = pos_to_canvas((70, 100))
-        c.create_rectangle(x1, y1, x2, y2, outline='blue')
+        text = []
+        lines = []
+        rects = [
+            # border
+            [x1, y1, x2 - x1, y2 - y1, 'red', 'blue']
+        ]
 
         to_draw = [state for state in self.controller.tracker.positions.values()]
         for state in to_draw:
@@ -37,18 +47,43 @@ class ControllerUi:
             outline = 'green'
             if state.is_stale():
                 outline = 'black'
-            c.create_rectangle(x - size, y - size, x + size, y + size, fill=colour, outline=outline)
+            rects.append([x - size / 2, y - size / 2, size, size, colour, outline])
+            text.append([x, y - 5, state.type + '-' + state.name, 'black'])
+
+        return {
+            'rects': rects,
+            'lines': lines,
+            'text': text,
+            'tracked': [{'name': s.name, 'pos': [round(p) for p in s.pos]} for s in
+                        self.controller.tracker.positions.values()]
+        }
 
     def start_ui(self):
         """
         Render the UI. Never returns, run this on its own thread
         """
-        tk = tkinter.Tk()
-        c = tkinter.Canvas(tk, width=CANVAS_W + CANVAS_BORDER*2, height=CANVAS_H + CANVAS_BORDER*2)
-        c.pack()
+        server = ThreadingHTTPServer(('0.0.0.0', 55555), handler(self))
+        server.serve_forever()
 
-        while True:
-            self.draw_tracking(c)
-            tk.update_idletasks()
-            tk.update()
-            time.sleep(0.1)
+
+def handler(ui: ControllerUi):
+    class RequestHandler(SimpleHTTPRequestHandler):
+        def __init__(self, *args, **kwargs):
+            directory = os.path.dirname(os.path.realpath(__file__)) + '/web/'
+            super().__init__(*args, directory=directory, **kwargs)
+
+        def send_head(self):
+            if self.path.endswith('map.json'):
+                mapjs = json.dumps(ui.draw_tracking())
+                data = mapjs.encode('utf-8')
+                self.send_response(HTTPStatus.OK)
+                self.send_header("Content-type", "application/json")
+                self.send_header("Content-Length", len(data))
+                self.send_header("Last-Modified",
+                                 self.date_time_string(int(time.time())))
+                self.end_headers()
+                self.wfile.write(data)
+                return None
+            return super().send_head()
+
+    return RequestHandler
