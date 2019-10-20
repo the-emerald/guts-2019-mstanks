@@ -33,13 +33,11 @@ class Controller:
     def pick_target(self, bot):
         targ = None
 
-        if bot.can_fire():
-            closest = self.tracker.closest_enemy(bot)
-            targ = closest.id if closest else None
+        if bot.ammo > 0:
+            targ = self.tracker.closest_enemy(bot)
 
         if not targ:
-            closest = self.tracker.closest_pickup(bot)
-            targ = closest.id if closest else None
+            targ = self.tracker.closest_pickup(bot)
 
         return targ
 
@@ -66,18 +64,25 @@ class Controller:
         # we will then re raise it, so it's okay
         try:
             last_time = 0
+            started = False
             while True:
                 try:
                     message = self.messages.get(timeout=2)
                     logging.debug('Message %s', message)
                     self.tracker.handle_message(message)
+                    if not started and message:
+                        started = True
+                        logging.info("Started")
+                        for bot in self.bots:
+                            bot.movement_strategy = CirclingStrategy()
+                            bot.turret_strategy = TurretSpin()
                 except Empty:
                     pass
 
                 cur_time = time.time()
                 logging.debug("time %s last_time %s", cur_time, last_time)
 
-                if cur_time - last_time > 0.75:
+                if cur_time - last_time > 0.75 and started:
                     for bot in self.bots:
                         if bot.respawn_time:
                             if bot.respawn_time < time.time():
@@ -90,7 +95,11 @@ class Controller:
                         if bot.movement_strategy.done:
                             bot.movement_strategy = CirclingStrategy()
 
-                        bot.target = self.pick_target(bot)
+                        new_targ = self.pick_target(bot)
+                        new_targ_id = new_targ.id if new_targ else None
+                        if new_targ_id != bot.target:
+                            bot.target = new_targ_id
+                            logging.info("%s is now targeting %s:%s", bot.name, new_targ.type, new_targ.name)
 
         except BaseException as _:
             self.halt = True
@@ -118,8 +127,6 @@ class Controller:
         bot = Bot(gs, f'{self.team}:{idx}', self.tracker)
 
         # TODO swap strategies as needed
-        bot.movement_strategy = CirclingStrategy()
-        bot.turret_strategy = TurretSpin()
         self.bots.append(bot)
 
         rx_thread = threading.Thread(target=rx_loop, daemon=True)
