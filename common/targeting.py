@@ -1,17 +1,16 @@
 import math
 from math import sqrt
 
-from controller.tracker import ObjectState
+from controller.tracker import ObjectState, Alignment
 
 round_speed = 10
 
 
-def calculate_firing_solution(gun_position: tuple, gun_velocity: tuple, target: ObjectState) -> float:
+def calculate_firing_solution(gun_position: tuple, target: ObjectState) -> float:
     # https://stackoverflow.com/questions/2248876/2d-game-fire-at-a-moving-target-by-predicting-intersection-of-projectile-and-u
 
     xg, yg = gun_position
     xt, yt = target.pos
-    vgx, vgy = gun_velocity
     vtx, vty = target.velocity # Will be implemented later
 
     a = vtx**2 + vty**2 - round_speed**2
@@ -33,5 +32,10 @@ def calculate_firing_solution(gun_position: tuple, gun_velocity: tuple, target: 
     return abs(((math.atan2(ay - yg, ax - xg) * (180 / math.pi)) - 360)) % 360
 
 
-def check_firing_solution_clear(gun_position: tuple, solution: float):
-    pass
+def check_firing_solution_clear(targets: dict, gun_position: tuple, solution: float):
+    for key, value in targets.items():
+        if value.alignment != Alignment.FRIEND:
+            continue
+        if solution == calculate_firing_solution(gun_position, value):
+            return True
+    return False
