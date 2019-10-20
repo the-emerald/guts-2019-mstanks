@@ -10,7 +10,7 @@ class TurretSpin(Strategy):
 
     def action(self, bot):
         if self.start:
-            bot.game_server.sendMessage(ServerMessageTypes.STOPALL)
+            bot.game_server.sendMessage(ServerMessageTypes.STOPTURRET)
             self.start = False
         if self.want_spin and not self.spin:
             bot.game_server.sendMessage(ServerMessageTypes.TOGGLETURRETRIGHT)
