@@ -12,8 +12,9 @@ class TurretSpin(Strategy):
         if bot.target and bot.can_fire():
             position = bot.tracker.positions[bot.target]
             if not position.is_stale():
-                bot.game_server.sendMessage(ServerMessageTypes.STOPTURRET)
-                self.spin = False
+                if self.spin:
+                    bot.game_server.sendMessage(ServerMessageTypes.STOPTURRET)
+                    self.spin = False
                 # todo targetting
 
                 firing_angle = bot.angle_to_object(position.pos)
