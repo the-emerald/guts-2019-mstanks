@@ -17,7 +17,7 @@ class ObjectState:
     name: str
     STALE_TIME = 5
 
-    def __init__(self, pos, heading, turret_heading, type, id, name, alignment):
+    def __init__(self, pos, heading, turret_heading, type, id, name, alignment, last):
         self.pos = pos
         self.heading = heading
         self.turret_heading = turret_heading
@@ -26,6 +26,16 @@ class ObjectState:
         self.name = name
         self.time = time.time()
         self.alignment = alignment
+        self.velocity = (0, 0)
+        if last:
+            x, y = pos
+            ox, oy = last.pos
+            dx, dy = x - ox, y - oy
+            dt = self.time - last.time
+            if dt > 0.1:
+                self.velocity = (dx / dt, dy / dt)
+            else:
+                self.velocity = last.velocity
 
     def is_stale(self):
         return time.time() - self.time > ObjectState.STALE_TIME
@@ -52,5 +62,11 @@ class Tracker:
             alignment = Alignment.NEUTRAL
             if type == 'Tank':
                 alignment = Alignment.FRIEND if name.startswith(self.team) else Alignment.FOE
-            self.positions[id] = ObjectState(pos, heading, turret_heading, type, id, name, alignment)
+            last = None
+            try:
+                last = self.positions[id]
+            except KeyError:
+                pass
+            state = ObjectState(pos, heading, turret_heading, type, id, name, alignment, last)
+            self.positions[id] = state
             logging.debug('Tracked %s at %s', name, pos)
