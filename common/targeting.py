@@ -3,7 +3,7 @@ from math import sqrt
 
 from controller.tracker import ObjectState, Alignment
 
-round_speed = 10
+round_speed = 25
 
 
 def calculate_firing_solution(gun_position: tuple, target: ObjectState) -> float:
@@ -11,7 +11,7 @@ def calculate_firing_solution(gun_position: tuple, target: ObjectState) -> float
 
     xg, yg = gun_position
     xt, yt = target.pos
-    vtx, vty = target.velocity # Will be implemented later
+    vtx, vty = target.velocity  # Will be implemented later
 
     a = vtx**2 + vty**2 - round_speed**2
     b = 2 * (vtx * (xt - xg) + vty * (yt - yg))
