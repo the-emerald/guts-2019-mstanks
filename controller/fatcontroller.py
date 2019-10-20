@@ -6,8 +6,9 @@ from typing import List
 
 from common.bot import Bot
 from common.servercomms import ServerComms
-from controller.tracker import Tracker
+from controller.tracker import Tracker, Alignment
 from strategies.movement.circling import CirclingStrategy
+from strategies.movement.shooty import ShootyStrategy
 from strategies.turret.turretspin import TurretSpin
 
 
@@ -66,7 +67,7 @@ class Controller:
 
                     targ = None
                     for entity_id, state in self.tracker.positions.items():
-                        if state.type == 'AmmoPickup' and not state.name.startswith(self.team + ':'):
+                        if state.alignment == Alignment.FOE and not state.name.startswith(self.team + ':'):
                             targ = entity_id
 
                     for bot in self.bots:
@@ -94,7 +95,7 @@ class Controller:
         gs = ServerComms(self.host, self.port)
         bot = Bot(gs, f'{self.team}:{idx}', self.tracker)
         # TODO swap strategies as needed
-        bot.movement_strategy = CirclingStrategy()
+        bot.movement_strategy = ShootyStrategy()
         bot.turret_strategy = TurretSpin()
         self.bots.append(bot)
 
@@ -108,7 +109,7 @@ class Controller:
 
     def change_strategy(self, strat):
         for bot in self.bots:
-            bot.strategy = strat()
+            bot.strategy = ShootyStrategy()
         pass
 
 
