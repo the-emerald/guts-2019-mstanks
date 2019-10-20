@@ -29,6 +29,9 @@ def calculate_firing_solution(gun_position: tuple, target: ObjectState) -> float
     ax = t * vtx + xt
     ay = t * vty + yt
 
+    if sqrt(ax**2 + ay**2) >= 100:
+        return None
+
     return abs(((math.atan2(ay - yg, ax - xg) * (180 / math.pi)) - 360)) % 360
 
 
