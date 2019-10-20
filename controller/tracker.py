@@ -84,6 +84,9 @@ class Tracker:
             logging.debug('Tracked %s at %s', name, pos)
         if message['messageType'] == ServerMessageTypes.SNITCHPICKUP:
             self.positions[message['Id']].priority = True
+            for bot in bots:
+                if bot.name == self.positions[message['Id']].name:
+                    bot.kills += 1
 
     def shoot_at(self, bot: ObjectState):
         if bot.is_stale():
