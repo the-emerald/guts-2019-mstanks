@@ -63,7 +63,7 @@ class Bot:
         if ty == ServerMessageTypes.HITDETECTED:
             self.health -= 1
         if ty == ServerMessageTypes.DESTROYED:
-            logging.info("Died bot %s", name)
+            logging.info("Died bot %s", self.name)
             self.respawn_time = time.time() + 5
         return
 
