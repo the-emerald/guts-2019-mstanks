@@ -93,6 +93,11 @@ class Controller:
             bot.action()
             time.sleep(1 / 16)
 
+    def change_strategy(self, strat):
+        for bot in self.bots:
+            bot.strategy = strat()
+        pass
+
 
 if __name__ == '__main__':
     import fire

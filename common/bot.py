@@ -9,6 +9,8 @@ from controller.tracker import Tracker
 
 
 class Bot:
+    heading: int
+
     def __init__(self, game_server: ServerComms, name: str, tracker: Tracker):
         self.game_server = game_server
         self.game_server.sendMessage(ServerMessageTypes.CREATETANK, {'Name': name})
@@ -49,18 +51,21 @@ class Bot:
             self.turret_heading = message['TurretHeading']
         return
 
-    def dodge(self, selfpos, selfheading: int, firepos, fireheading: int):
+    def need_dodge(self, firepos, fireheading):
         a = self.angle_to_object(firepos)
         b = (a + 180) % 360
         if b == fireheading:
-            heading = None
-            if a - 10 <= selfheading <= a + 10:
-                heading = (firepos + 90) % 360
-            elif b - 10 <= selfheading <= b + 10:
-                heading = (firepos - 90) % 360
-            if heading:
-                self.game_server.sendMessage(ServerMessageTypes.TURNTOHEADING, {"Amount": heading})
-                self.game_server.sendMessage(ServerMessageTypes.MOVEFORWARDDISTANCE, {"Amount": 15})
+            self.dodge(firepos, a, b)
+
+    def dodge(self, firepos, a, b):
+        heading = None
+        if ((a - 10) % 360) <= self.heading <= ((a + 10) % 360):
+            heading = (firepos + 90) % 360
+        elif ((b - 10) % 360) <= self.heading <= ((b + 10) % 360):
+            heading = (firepos - 90) % 360
+        if heading:
+            self.game_server.sendMessage(ServerMessageTypes.TURNTOHEADING, {"Amount": heading})
+            self.game_server.sendMessage(ServerMessageTypes.MOVEFORWARDDISTANCE, {"Amount": 15})
 
     def return_to_goal(self):
         def get_close():
@@ -81,8 +86,28 @@ class Bot:
                         goal = 0, 101
                     get_close()
                 get_close()
-                if self.pos == goal:
+                if self.compare_pos(goal):
                     at_goal = 1
+        else:
+            goal = 0, -101
+            while not at_goal:
+                x, y = self.pos
+                if y <= -90:
+                    while abs(x) >= 15:
+                        goal = 0, -89
+                        get_close()
+                        goal = 0, 101
+                    get_close()
+                get_close()
+                if self.compare_pos(goal):
+                    at_goal = 1
+
+
+    def compare_pos(self, loc):
+        if self.pos - 1 <= loc <= self.pos + 1:
+            return 1
+        else:
+            return 0
 
     def action(self):
         if self.movement_strategy:
