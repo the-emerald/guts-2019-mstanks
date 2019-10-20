@@ -1,3 +1,4 @@
+from common import targeting
 from common.servermessagetypes import ServerMessageTypes
 from strategies import Strategy
 
@@ -10,24 +11,15 @@ class TurretSpin(Strategy):
 
     def try_shoot(self, bot):
         if bot.target and bot.can_fire():
-            position = bot.tracker.positions[bot.target]
-            if not position.is_stale():
+            tgt = bot.tracker.positions[bot.target]
+            if not tgt.is_stale():
                 if self.spin:
                     bot.game_server.sendMessage(ServerMessageTypes.STOPTURRET)
                     self.spin = False
-                # todo targetting
-
-                firing_angle = bot.angle_to_object(position.pos)
+                firing_angle = targeting.calculate_firing_solution(tgt.pos, tgt)
                 bot.turn_turret_to_heading(firing_angle)
-                dist = bot.distance_to_object(position.pos)
-
-                angle_deviation = abs(bot.turret_heading - firing_angle)
-
-                if dist < 30 and angle_deviation < (100 / dist):
-                    bot.fire()
-
+                bot.fire()
                 return True
-
         return False
 
     def action(self, bot):
